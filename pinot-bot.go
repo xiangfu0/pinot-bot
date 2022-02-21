@@ -30,6 +30,7 @@ type Config struct {
 	GmailAccount      string
 	GmailAppPassword  string
 	MailClientType  string
+	CronSchedule string
 }
 
 func NewConfig() (*Config, error) {
@@ -43,10 +44,15 @@ func NewConfig() (*Config, error) {
 		GmailAccount:      os.Getenv("GMAIL_ACCOUNT"),
 		GmailAppPassword:  os.Getenv("GMAIL_APP_PASSWORD"),
 		MailClientType:   os.Getenv("MAIL_CLIENT_TYPE"),
+		CronSchedule:   os.Getenv("CRON_SCHEDULE"),
 	}
 	fmt.Println(config)
 	if config.Port == "" {
 		config.Port = "80"
+	}
+	if config.CronSchedule == "" {
+		// Schedule the daily digest cron job at 2:00:00 AM (UTC)
+		config.CronSchedule = "0 0 2 * * *"
 	}
 	return config, nil
 }
@@ -58,7 +64,6 @@ func main() {
 	}
 	modules := []joe.Module {
 		joehttp.Server(":" + config.Port),
-		// Schedule the daily digest cron job at 2:00:00 AM (UTC)
 		cron.ScheduleEvent("0 0 2 * * *", DailyDigestEvent{}),
 	}
 	if config.SlackAppToken != "" && config.SlackBotUserToken != ""  {
@@ -112,6 +117,11 @@ func (b *PinotBot) PrintConfig(msg joe.Message) error {
 func (b *PinotBot) HandleHTTP(c context.Context, r joehttp.RequestEvent) {
 	if r.URL.Path == "/" {
 		fmt.Println("Pinot bot is running..")
+	}
+	if r.URL.Path == "/run-digest" {
+		fmt.Println("Running Pinot daily digest..")
+		responseMsg := RunDailyDigest(b.Config)
+		fmt.Printf("Finished daily-digest: `%s`\n", responseMsg)
 	}
 }
 

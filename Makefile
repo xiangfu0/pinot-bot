@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-IMAGE=shlee0605/pinot-bot
+IMAGE=fx19880617/pinot-bot
 
 .PHONY: build
 build:

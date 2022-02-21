@@ -5,9 +5,12 @@ Pinot Bot
 Simple Pinot Bot for Apache Pinot Slack Workspace.
 
 # Build and run locally
+
+Verified on Golang 1.17
 ```
 # Install dependencies
-$ go get -d ./...
+$ go mod init pinot-bot
+$ go mode tidy
 
 # Running pinot-bot locally
 $ go run pinot-bot.go digest.go

@@ -43,7 +43,7 @@ func RunDailyDigest(c *Config) string {
 
 	// Fetch channels
 	pm := &slack.GetConversationsParameters{
-		ExcludeArchived: "true",
+		ExcludeArchived: true,
 		Limit: 1000,
 	}
 	channels, _, err := api.GetConversations(pm)
