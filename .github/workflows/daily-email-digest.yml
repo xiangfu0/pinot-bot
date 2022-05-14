@@ -1,0 +1,44 @@
+name: Nightly Daily Email Digest
+
+on:
+  schedule:
+  - cron: '0 1 * * *' # run at 1:00 AM UTC(7:00 PM PDT)
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Get dependencies
+      run: |
+        go mod init pinot-bot
+        go mod tidy
+        go get -v -t -d .
+
+    - name: Build
+      run: CGO_ENABLED=0 go build -v -tags netgo -ldflags "-extldflags '-static' -w" -o build/pinot-bot
+
+    - name: Run daily digest
+      run: go run pinot-bot.go digest.go
+      env:
+        CRON_SCHEDULE: "one-time"
+        MAIL_CLIENT_TYPE: ${{ secrets.MAIL_CLIENT_TYPE }}
+        FROM: ${{ secrets.FROM }}
+        TO: ${{ secrets.TO }}
+        SLACK_APP_TOKEN: ${{ secrets.SLACK_APP_TOKEN }}
+        SLACK_BOT_USER_TOKEN: ${{ secrets.SLACK_BOT_USER_TOKEN }}
+        SENDGRID_TOKEN: ${{ secrets.SENDGRID_TOKEN }}
+        GMAIL_ACCOUNT: ${{ secrets.GMAIL_ACCOUNT }}
+        GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}

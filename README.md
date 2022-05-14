@@ -1,5 +1,5 @@
-Pinot Bot
-====
+# Pinot Bot
+
 ![Go](https://github.com/snleee/pinot-bot/workflows/Go/badge.svg)
 
 Simple Pinot Bot for Apache Pinot Slack Workspace.
@@ -7,10 +7,11 @@ Simple Pinot Bot for Apache Pinot Slack Workspace.
 # Build and run locally
 
 Verified on Golang 1.17
+
 ```
 # Install dependencies
 $ go mod init pinot-bot
-$ go mode tidy
+$ go mod tidy
 
 # Running pinot-bot locally
 $ go run pinot-bot.go digest.go
@@ -20,6 +21,7 @@ $ SLACK_APP_TOKEN=<app_token> SLACK_BOT_USER_TOKEN=<bot_token> FROM=xxx@gmail.co
 ```
 
 # Build docker image
+
 ```
 # Install gox (cross compilation tool)
 $ go get github.com/mitchellh/gox
@@ -41,5 +43,6 @@ $ make push
 ```
 
 # Set up with Gmail Account
+
 1. Setup the app account by following: https://support.google.com/accounts/answer/185833?hl=en
 2. Configure `MAIL_CLIENT_TYPE=GMAIL,GMAIL_ACCOUNT=<gmail_account>,GMAIL_APP_PASSWORD=<gmail_apppassword>`

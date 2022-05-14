@@ -62,9 +62,27 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to load config: ", err)
 	}
+	if config.CronSchedule == "one-time" {
+		modules := []joe.Module {
+			joehttp.Server(":" + config.Port),
+			cron.ScheduleEvent(config.CronSchedule, DailyDigestEvent{}),
+		}
+		if config.SlackAppToken != "" && config.SlackBotUserToken != ""  {
+			modules = append(modules, slack.Adapter(config.SlackBotUserToken))
+		}
+	
+		b := &PinotBot{
+			Bot: joe.New("pinot-bot", modules...),
+			Config: config,
+		}
+		b.Say("daily-digest", "Pinot bot is starting..")
+		responseMsg := RunDailyDigest(config)
+		b.Say("daily-digest", responseMsg)
+		return
+	}
 	modules := []joe.Module {
 		joehttp.Server(":" + config.Port),
-		cron.ScheduleEvent("0 0 2 * * *", DailyDigestEvent{}),
+		cron.ScheduleEvent(config.CronSchedule, DailyDigestEvent{}),
 	}
 	if config.SlackAppToken != "" && config.SlackBotUserToken != ""  {
 		modules = append(modules, slack.Adapter(config.SlackBotUserToken))

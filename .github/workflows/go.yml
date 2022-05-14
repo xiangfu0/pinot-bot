@@ -1,4 +1,4 @@
-name: Go
+name: Build and Test
 
 on:
   push:
@@ -24,11 +24,9 @@ jobs:
 
     - name: Get dependencies
       run: |
-        go get -v -t -d ./...
-        if [ -f Gopkg.toml ]; then
-            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-            dep ensure
-        fi
+        go mod init pinot-bot
+        go mod tidy
+        go get -v -t -d .
 
     - name: Build
       run: CGO_ENABLED=0 go build -v -tags netgo -ldflags "-extldflags '-static' -w" -o build/pinot-bot
@@ -36,9 +34,9 @@ jobs:
     - name: Test
       run: go test -v .
 
-    - name: Publish
-      uses: elgohr/Publish-Docker-Github-Action@master
-      with:
-        name: shlee0605/pinot-bot
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+#    - name: Publish
+#      uses: elgohr/Publish-Docker-Github-Action@master
+#      with:
+#        name: fx19880617/pinot-bot
+#        username: ${{ secrets.DOCKER_USERNAME }}
+#        password: ${{ secrets.DOCKER_PASSWORD }}
